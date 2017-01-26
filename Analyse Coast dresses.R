@@ -20,6 +20,7 @@ size_summary <- size_summary[c("size6.Var1", "size6.Freq", "size8.Freq", "size10
                                "size12.Freq", "size14.Freq", "size16.Freq", "size18.Freq")]
 colnames(size_summary) <- c("Stock", "size6", "size8", "size10", "size12", "size14",
                             "size16", "size18")
+
 # Graph the data
 size_summary.m <- melt(size_summary, id.vars = "Stock")
 ggplot(size_summary.m, aes(x = variable, y = value, fill=Stock)) +
@@ -29,6 +30,27 @@ ggplot(size_summary.m, aes(x = variable, y = value, fill=Stock)) +
 colours <- as.data.frame(table(data$Colour, data$Date))
 colours <- dcast(colours, Var1 ~ Var2, value.var="Freq")
 colnames(colours)[1] <- "Colour"
+
+## Analyse price distributions
+
+# Box plots for each time point
+ggplot(data, aes(x=Date, y=Price)) + geom_boxplot() +
+  labs(title="Box plots of prices of dresses by date")
+
+# Histogram for January 2017
+Jan17 <- subset(data, Date == "Jan_17")
+qplot(Jan17$Price,
+      geom="histogram",
+      main = "Histogram of dress prices, January 2017",
+      binwidth = 10,
+      xlab = "Price")
+
+
+
+
+
+
+
 
 
 
