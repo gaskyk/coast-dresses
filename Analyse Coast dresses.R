@@ -6,8 +6,9 @@
 ##############################################
 
 ## Import libraries
-library(ggplot2)
+library(tidyverse)
 library(reshape2)
+library(data.table)
 
 ## Import data and look at it
 data <- read.csv("C:/Users/ONS-BIG-DATA/Documents/Karens github repo/coast-dresses/Coast_dresses_all.csv",
@@ -21,10 +22,57 @@ size_summary <- size_summary[c("size6.Var1", "size6.Freq", "size8.Freq", "size10
 colnames(size_summary) <- c("Stock", "size6", "size8", "size10", "size12", "size14",
                             "size16", "size18")
 
-# Graph the data
+# Graph the data for size and stock
 size_summary.m <- melt(size_summary, id.vars = "Stock")
 ggplot(size_summary.m, aes(x = variable, y = value, fill=Stock)) +
-  geom_bar(stat='identity') + labs(x="Size", y="Dresses in stock", title="Stock levels of Coast dresses by size")
+  geom_bar(stat='identity') + labs(x="Size", y="Dresses in stock", title="Stock levels of Coast dresses by size") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+## Has stock availability changed over time?
+## Hate that I can't seem to iterate over this
+stock_time_6 <- data %>%
+  group_by(Date) %>%
+  count(size6)
+stock_time_8 <- data %>%
+  group_by(Date) %>%
+  count(size8)
+stock_time_10 <- data %>%
+  group_by(Date) %>%
+  count(size10)
+stock_time_12 <- data %>%
+  group_by(Date) %>%
+  count(size12)
+stock_time_14 <- data %>%
+  group_by(Date) %>%
+  count(size14)
+stock_time_16 <- data %>%
+  group_by(Date) %>%
+  count(size16)
+stock_time_18 <- data %>%
+  group_by(Date) %>%
+  count(size18)
+# Merge these into one dataset
+stock_time <- cbind(stock_time_6, stock_time_8, stock_time_10, stock_time_12,
+                    stock_time_14, stock_time_16, stock_time_18)
+# Remove the unnecessary datasets
+rm(stock_time_6, stock_time_8, stock_time_10, stock_time_12,
+   stock_time_14, stock_time_16, stock_time_18)
+# Remove the unnecessary columns
+stock_time <- stock_time[ , !(names(stock_time) %in% c('Date1','Date2','Date3','Date4',
+                                                       'Date5','Date6',
+                         'size8','size10','size12','size14','size16','size18'))]
+# Rename columns
+setnames(stock_time, old = c('size6','n','n1','n2','n3','n4','n5','n6'),
+         new = c('stock','size6','size8','size10','size12','size14','size16','size18'))
+stock_time$total <- rowSums(stock_time[,3:9])
+
+# Graph the data for stock levels over time
+stock_time.m <- melt(stock_time, id.vars = c("Date", "stock"))
+stock_time_total <- subset(stock_time.m, variable=='total')
+ggplot(stock_time_total, aes(x = Date, y = value, fill=stock)) +
+  geom_bar(stat='identity') + labs(x="Month", y="Dresses in stock", title="Stock levels of Coast dresses by time") +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 ## Which colours are popular when?
 colours <- as.data.frame(table(data$Colour, data$Date))
@@ -35,24 +83,14 @@ colnames(colours)[1] <- "Colour"
 
 # Box plots for each time point
 ggplot(data, aes(x=Date, y=Price)) + geom_boxplot() +
-  labs(title="Box plots of prices of dresses by date")
+  labs(title="Box plots of prices of dresses by date") +
+  theme(plot.title = element_text(hjust = 0.5))
 
 # Histogram for January 2017
-Jan17 <- subset(data, Date == "Jan_17")
-qplot(Jan17$Price,
+Dec17 <- subset(data, Date == "Dec_17")
+qplot(Dec17$Price,
       geom="histogram",
-      main = "Histogram of dress prices, January 2017",
+      main = "Histogram of dress prices, December 2017",
       binwidth = 10,
-      xlab = "Price")
-
-
-
-
-
-
-
-
-
-
-
-
+      xlab = "Price") +
+  theme(plot.title = element_text(hjust = 0.5))
