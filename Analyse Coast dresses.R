@@ -87,10 +87,22 @@ ggplot(data, aes(x=Date, y=Price)) + geom_boxplot() +
   theme(plot.title = element_text(hjust = 0.5))
 
 # Histogram for January 2017
-Dec17 <- subset(data, Date == "Dec_17")
+Dec17 <- subset(data, Date == "d_Dec_17")
 qplot(Dec17$Price,
       geom="histogram",
       main = "Histogram of dress prices, December 2017",
       binwidth = 10,
       xlab = "Price") +
   theme(plot.title = element_text(hjust = 0.5))
+
+
+
+
+
+
+
+
+
+
+
+
