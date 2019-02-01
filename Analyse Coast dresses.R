@@ -34,7 +34,7 @@ ggplot(size_summary.m, aes(x = variable, y = value, fill=Stock)) +
 ## Try something like this instead:
 stock_time <- data %>% 
                 select(size6, size8, size10, size12, size14, size16, size18) %>% 
-                map_dfc( ~ data %>% group_by(Date) %>% count(.x))
+                map_dfc( ~ data %>% group_by(Date) %>% count(!!.x))
 #-------
 
 stock_time_6 <- data %>%
