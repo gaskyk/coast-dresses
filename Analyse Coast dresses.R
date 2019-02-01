@@ -29,48 +29,11 @@ ggplot(size_summary.m, aes(x = variable, y = value, fill=Stock)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 ## Has stock availability changed over time?
-## Hate that I can't seem to iterate over this
-#-------
-## Try something like this instead:
 stock_time <- data %>% 
                 select(size6, size8, size10, size12, size14, size16, size18) %>% 
                 map_dfc( ~ data %>% group_by(Date) %>% count(!!.x))
-#-------
 
-stock_time_6 <- data %>%
-  group_by(Date) %>%
-  count(size6)
-stock_time_8 <- data %>%
-  group_by(Date) %>%
-  count(size8)
-stock_time_10 <- data %>%
-  group_by(Date) %>%
-  count(size10)
-stock_time_12 <- data %>%
-  group_by(Date) %>%
-  count(size12)
-stock_time_14 <- data %>%
-  group_by(Date) %>%
-  count(size14)
-stock_time_16 <- data %>%
-  group_by(Date) %>%
-  count(size16)
-stock_time_18 <- data %>%
-  group_by(Date) %>%
-  count(size18)
-# Merge these into one dataset
-stock_time <- cbind(stock_time_6, stock_time_8, stock_time_10, stock_time_12,
-                    stock_time_14, stock_time_16, stock_time_18)
-# Remove the unnecessary datasets
-rm(stock_time_6, stock_time_8, stock_time_10, stock_time_12,
-   stock_time_14, stock_time_16, stock_time_18)
-# Remove the unnecessary columns
-stock_time <- stock_time[ , !(names(stock_time) %in% c('Date1','Date2','Date3','Date4',
-                                                       'Date5','Date6',
-                         'size8','size10','size12','size14','size16','size18'))]
 # Rename columns
-setnames(stock_time, old = c('size6','n','n1','n2','n3','n4','n5','n6'),
-         new = c('stock','size6','size8','size10','size12','size14','size16','size18'))
 stock_time$total <- rowSums(stock_time[,3:9])
 
 # Graph the data for stock levels over time
